@@ -1,11 +1,12 @@
 {
   "name": "bureaucratic-translator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check app.js && node --check api/generate.js && node --check api/status.js"
+    "check": "node --check app.js && node --check api/generate.js && node --check api/status.js",
+    "dev": "npx --yes vercel@latest dev"
   },
   "engines": {
     "node": ">=20"

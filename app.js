@@ -206,6 +206,7 @@ function showToast(message) {
 }
 
 descriptionField.addEventListener("input", () => {
+  descriptionField.setCustomValidity("");
   charCount.textContent = descriptionField.value.length + " / 1800";
 });
 
@@ -224,7 +225,8 @@ function renderReview(notes = []) {
 }
 
 async function requestAiDraft(data) {
-  const response = await fetch("/api/generate", {
+  const endpoint = new URL("api/generate", document.baseURI);
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     cache: "no-store",
@@ -257,6 +259,12 @@ function showGeneratedResult(data, generated, mode) {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (!descriptionField.value.trim()) {
+    descriptionField.setCustomValidity("Опишите ситуацию несколькими словами.");
+    form.reportValidity();
+    return;
+  }
+  descriptionField.setCustomValidity("");
   if (!form.reportValidity()) return;
   const data = {
     category: selectedCategory(),
@@ -316,6 +324,25 @@ document.querySelector("#exampleButton").addEventListener("click", () => {
   descriptionField.focus();
 });
 
+document.querySelector("#clearButton").addEventListener("click", () => {
+  form.reset();
+  descriptionField.setCustomValidity("");
+  charCount.textContent = "0 / 1800";
+  resultEmpty.hidden = false;
+  resultContent.hidden = true;
+  planEmpty.hidden = false;
+  planContent.hidden = true;
+  resultStatus.classList.remove("is-ready");
+  resultStatus.innerHTML = "<span></span> ОЖИДАЕТ ДАННЫХ";
+  documentText.value = "";
+  reviewBox.hidden = true;
+  aiConsentNote.hidden = true;
+  planList.replaceChildren();
+  progressBar.style.width = "0%";
+  progressText.textContent = "0 из 4 выполнено";
+  showToast("Форма и результат очищены");
+});
+
 document.querySelector("#copyButton").addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(documentText.value);
@@ -355,7 +382,8 @@ aiModeToggle.addEventListener("change", () => {
 
 async function checkAiAvailability() {
   try {
-    const response = await fetch("/api/status", { cache: "no-store" });
+    const endpoint = new URL("api/status", document.baseURI);
+    const response = await fetch(endpoint, { cache: "no-store" });
     if (!response.ok) return;
     const status = await response.json();
     aiAvailable = status.available === true;
@@ -377,3 +405,11 @@ async function checkAiAvailability() {
 }
 
 checkAiAvailability();
+
+
+if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
+  const serviceWorkerUrl = new URL("service-worker.js", document.baseURI);
+  navigator.serviceWorker.register(serviceWorkerUrl).catch(() => {
+    // The application remains usable even when offline installation is unavailable.
+  });
+}

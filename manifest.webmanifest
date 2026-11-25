@@ -1,0 +1,19 @@
+{
+  "name": "Бюрократический переводчик",
+  "short_name": "Бюропереводчик",
+  "description": "Официальные обращения и понятные планы действий из обычного описания проблемы.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f4ef",
+  "theme_color": "#f5f4ef",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

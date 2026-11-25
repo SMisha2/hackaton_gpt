@@ -272,3 +272,15 @@ a { color: inherit; text-decoration: none; }
   .print-sheet { display:block !important; position:absolute; inset:0; width:100%; color:#111; background:white; white-space:pre-wrap; overflow-wrap:anywhere; font-family:Georgia, "Times New Roman", serif; font-size:11pt; line-height:1.65; }
   html, body { background:white !important; }
 }
+
+
+/* Quick actions and keyboard accessibility */
+.heading-actions { display:flex; align-items:center; gap:9px; }
+.clear-button { padding:10px 14px; border:1px solid #e0ded5; border-radius:999px; background:rgba(255,255,255,.55); color:#77736b; font-size:10px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s,transform .2s; }
+.clear-button:hover { background:#fffefa; border-color:#c9c4b6; transform:translateY(-1px); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline:2px solid #8b79df; outline-offset:3px; }
+.generate-button:focus-visible, .example-button:focus-visible, .clear-button:focus-visible { outline-offset:4px; }
+@media (max-width:650px) {
+  .heading-actions { width:100%; }
+  .heading-actions button { flex:1; }
+}

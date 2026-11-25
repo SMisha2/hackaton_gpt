@@ -8,6 +8,9 @@
   <title>Бюрократический переводчик — слова, которые работают</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -59,7 +62,10 @@
           <h2>Давайте разберёмся</h2>
           <p>Не нужно подбирать правильные слова. Просто расскажите, как всё было.</p>
         </div>
-        <button class="example-button" id="exampleButton" type="button"><span>✦</span> Заполнить примером</button>
+        <div class="heading-actions">
+          <button class="clear-button" id="clearButton" type="button">Очистить</button>
+          <button class="example-button" id="exampleButton" type="button"><span>✦</span> Заполнить примером</button>
+        </div>
       </div>
 
       <div class="workspace-grid">
@@ -93,8 +99,8 @@
 
           <div class="field-group">
             <label class="field-label" for="description">Что произошло? <span>*</span></label>
-            <textarea class="text-area" id="description" name="description" rows="5" maxlength="1800" required placeholder="Например: уже третью неделю батареи еле тёплые, дома холодно. Звонили в управляющую компанию, но ничего не изменилось. Хотим, чтобы наконец разобрались с отоплением."></textarea>
-            <div class="field-meta"><span>Можно писать эмоционально и с подробностями — это нормально.</span><span id="charCount">0 / 1800</span></div>
+            <textarea class="text-area" id="description" name="description" rows="5" maxlength="1800" required aria-describedby="descriptionHelp" placeholder="Например: уже третью неделю батареи еле тёплые, дома холодно. Звонили в управляющую компанию, но ничего не изменилось. Хотим, чтобы наконец разобрались с отоплением."></textarea>
+            <div class="field-meta" id="descriptionHelp"><span>Можно писать эмоционально и с подробностями — это нормально.</span><span id="charCount">0 / 1800</span></div>
           </div>
 
           <div class="form-row">
@@ -133,7 +139,7 @@
 
           <div class="privacy-hint"><span class="privacy-icon">⌑</span><span><strong>Личные данные пока не нужны.</strong> Не указывайте паспортные данные, пароли, номера карт и другую чувствительную информацию.</span></div>
           <button class="generate-button" type="submit"><span>Собрать обращение</span><span class="button-arrow">↗</span></button>
-          <p class="form-footnote">Черновик можно будет изменить перед отправкой.</p>
+          <p class="form-footnote">Черновик можно будет изменить перед отправкой. Ничего не отправляется автоматически.</p>
         </form>
 
         <section class="result-column" aria-label="Результат генерации">
