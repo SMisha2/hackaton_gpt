@@ -27,11 +27,10 @@ test("normalizes whitespace without changing the meaning", () => {
   assert.equal(cleanText("  Уже   неделю   нет воды. "), "Уже неделю нет воды.");
 });
 
-test("replaces emotional phrases with neutral wording", () => {
+test("removes emotional filler while preserving the underlying problem", () => {
   const result = formalize("Достало, ничего не делают, разберитесь уже.");
-  assert.match(result, /обеспокоенность/i);
-  assert.match(result, /проблема не устранена/i);
-  assert.match(result, /прошу проверить обстоятельства/i);
+  assert.match(result, /проблема до настоящего времени не устранена/i);
+  assert.doesNotMatch(result, /достало|разберитесь/i);
 });
 
 test("creates a structured local document and a usable action plan", () => {
@@ -50,6 +49,37 @@ test("creates a structured local document and a usable action plan", () => {
   assert.equal(result.plan.length, 4);
   assert.equal(result.plan[0].title, "Зафиксируйте температуру");
   assert.ok(result.review_notes.length >= 2);
+});
+
+test("rewrites a housing complaint into a formal narrative instead of copying it", () => {
+  const original = "Уже третью неделю батареи еле тёплые, дома очень холодно. Звонили в управляющую компанию, но ничего не меняется. Достало, невозможно терпеть. Разберитесь уже с отоплением.";
+  const result = buildLocalResult({ category: "housing", description: original });
+  const body = result.document.split("Суть обращения\\n")[1];
+  assert.match(body, /Сообщаю о следующей ситуации/);
+  assert.match(body, /батареи нагреваются недостаточно/i);
+  assert.match(body, /температура в помещении остаётся низкой/i);
+  assert.match(body, /ранее по данному вопросу обращались по телефону в управляющую компанию/i);
+  assert.match(body, /однако проблема до настоящего времени не устранена/i);
+  assert.match(body, /Желаемый результат: Проверить обстоятельства, связанные с отоплением/i);
+  assert.doesNotMatch(body, /достало|еле тёплые|дома очень холодно|разберитесь уже/i);
+  assert.notEqual(body.trim(), original);
+});
+
+test("rephrases purchase and delivery details with category-specific language", () => {
+  const shop = buildLocalResult({
+    category: "shop",
+    description: "Купил наушники, через несколько дней один перестал работать. В магазине отправляют в сервис."
+  });
+  assert.match(shop.document, /Товар, о котором идёт речь: наушники/i);
+  assert.match(shop.document, /один из наушников перестал функционировать/i);
+  assert.match(shop.document, /предлагают обратиться в сервисный центр/i);
+
+  const delivery = buildLocalResult({
+    category: "delivery",
+    description: "Заказ задержали, курьер не приехал."
+  });
+  assert.match(delivery.document, /срок доставки заказа нарушен/i);
+  assert.match(delivery.document, /курьер не прибыл/i);
 });
 
 test("adds targeted steps for other categories", () => {
