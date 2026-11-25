@@ -405,3 +405,12 @@ html[data-theme="dark"] .plan-finish { background: #2a3826; color: #c4d9b3; }
   .print-sheet { display: block !important; position: absolute; inset: 0; width: 100%; color: #111; background: white; white-space: pre-wrap; overflow-wrap: anywhere; font-family: Georgia, "Times New Roman", serif; font-size: 11pt; line-height: 1.65; }
   html, body { background: white !important; }
 }
+
+.intro-tools { display:flex; align-items:center; gap:10px; }
+.clear-button { display:inline-flex; align-items:center; gap:7px; min-height:43px; padding:0 13px; border:1px solid var(--line); border-radius:10px; color:var(--muted); background:var(--surface); font-size:8px; font-weight:800; white-space:nowrap; cursor:pointer; transition:background .2s,border-color .2s,transform .2s; }
+.clear-button span { font-size:14px; color:var(--purple); }
+.clear-button:hover { background:var(--surface-soft); border-color:var(--line-strong); transform:translateY(-1px); }
+@media (max-width:620px) {
+  .intro-tools { width:100%; flex-wrap:wrap; }
+  .clear-button { min-height:38px; }
+}
