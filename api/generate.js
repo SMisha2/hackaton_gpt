@@ -1,4 +1,24 @@
 const CATEGORIES = new Set(["housing", "shop", "work", "municipal", "delivery", "other"]);
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 8;
+const rateLimitBuckets = new Map();
+
+// Best-effort per warm serverless instance. Add a provider-level firewall limit for a public launch.
+export function consumeRateLimit(key, now = Date.now()) {
+  const bucket = rateLimitBuckets.get(key);
+  if (!bucket || now >= bucket.resetAt) {
+    rateLimitBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    if (rateLimitBuckets.size > 1000) {
+      for (const [entryKey, entry] of rateLimitBuckets) {
+        if (now >= entry.resetAt) rateLimitBuckets.delete(entryKey);
+      }
+    }
+    return true;
+  }
+  if (bucket.count >= RATE_LIMIT_MAX) return false;
+  bucket.count += 1;
+  return true;
+}
 
 const OUTPUT_SCHEMA = {
   type: "object",
@@ -109,6 +129,15 @@ export default async function handler(request, response) {
 
   if (!process.env.OPENAI_API_KEY) {
     return response.status(503).json({ error: "ИИ-сервер не настроен." });
+  }
+
+  const forwardedFor = request.headers["x-forwarded-for"];
+  const clientIp = typeof forwardedFor === "string"
+    ? forwardedFor.split(",")[0].trim()
+    : Array.isArray(forwardedFor) ? String(forwardedFor[0] || "unknown") : "unknown";
+  if (!consumeRateLimit(clientIp)) {
+    response.setHeader("Retry-After", "60");
+    return response.status(429).json({ error: "Слишком много запросов. Повторите попытку позже." });
   }
 
   const validation = validatePayload(request.body);

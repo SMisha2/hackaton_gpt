@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validatePayload, normalizeGeneratedResult } from "../api/generate.js";
+import { validatePayload, normalizeGeneratedResult, consumeRateLimit } from "../api/generate.js";
 
 const validPayload = {
   consent: true,
@@ -57,4 +57,13 @@ test("normalizes valid model output and bounds list sizes", () => {
 
 test("rejects malformed model output", () => {
   assert.throws(() => normalizeGeneratedResult({ document: "коротко", plan: [] }));
+});
+
+test("applies a per-window request limit", () => {
+  const key = "test-ip-rate-limit";
+  for (let index = 0; index < 8; index += 1) {
+    assert.equal(consumeRateLimit(key, 10_000), true);
+  }
+  assert.equal(consumeRateLimit(key, 10_000), false);
+  assert.equal(consumeRateLimit(key, 70_001), true);
 });
