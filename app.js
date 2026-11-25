@@ -134,7 +134,7 @@ function buildDocument(data) {
   const desiredLine = data.desired ? "Желаемый результат: " + cleanText(data.desired) + "." : "";
   const askLines = info.ask.map((item, index) => (index + 1) + ". " + item).join("\n");
   const lines = [
-    "В " + recipient,
+    "Адресат: " + recipient,
     "от: [ФИО заявителя]",
     cityLine,
     "Контакт для ответа: [указать удобный способ связи]",

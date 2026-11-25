@@ -7,8 +7,6 @@ const OUTPUT_SCHEMA = {
     document: { type: "string" },
     plan: {
       type: "array",
-      minItems: 3,
-      maxItems: 5,
       items: {
         type: "object",
         additionalProperties: false,
@@ -21,8 +19,6 @@ const OUTPUT_SCHEMA = {
     },
     review_notes: {
       type: "array",
-      minItems: 2,
-      maxItems: 6,
       items: { type: "string" }
     }
   },
