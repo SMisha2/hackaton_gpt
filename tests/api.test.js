@@ -54,7 +54,7 @@ test("creates a structured local document and a usable action plan", () => {
 test("rewrites a housing complaint into a formal narrative instead of copying it", () => {
   const original = "Уже третью неделю батареи еле тёплые, дома очень холодно. Звонили в управляющую компанию, но ничего не меняется. Достало, невозможно терпеть. Разберитесь уже с отоплением.";
   const result = buildLocalResult({ category: "housing", description: original });
-  const body = result.document.split("Суть обращения\\n")[1];
+  const body = result.document.split("Суть обращения\n")[1];
   assert.match(body, /Сообщаю о следующей ситуации/);
   assert.match(body, /батареи нагреваются недостаточно/i);
   assert.match(body, /температура в помещении остаётся низкой/i);
