@@ -233,8 +233,8 @@ function setAiAvailability(available) {
     aiModeToggle.checked = false;
     aiConsent.checked = false;
     aiConsentPanel.hidden = true;
-    aiModeChip.textContent = "Локальный режим";
-    aiModeText.textContent = "Текст остаётся в этом браузере — ничего не отправляется.";
+    aiModeChip.textContent = "Локальный редактор";
+    aiModeText.textContent = "Переформулирует текст по категории прямо в браузере, без отправки на сервер.";
   } else {
     aiModeChip.textContent = "Доступен на сервере";
     aiModeText.textContent = "ИИ может лучше понять контекст и подготовить персональный план.";
