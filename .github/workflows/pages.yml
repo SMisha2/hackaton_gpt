@@ -6,6 +6,7 @@ on:
     paths:
       - "index.html"
       - "app.js"
+      - "lib/**"
       - "styles.css"
       - "favicon.svg"
       - "manifest.webmanifest"
@@ -22,9 +23,6 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       contents: read
       pages: write
@@ -37,14 +35,15 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
         continue-on-error: true
-      - name: Explain one-time setup if Pages is disabled
+      - name: Explain first-time setup
         if: steps.pages.outcome != 'success'
-        run: echo "::notice title=One-time setup::Open repository Settings, then Pages, and select GitHub Actions as the publishing source. Push to main again after saving."
+        run: echo "::notice title=One-time setup::Open Settings, then Pages, and select GitHub Actions as the publishing source."
       - name: Prepare static site
         if: steps.pages.outcome == 'success'
         run: |
-          mkdir -p dist
+          mkdir -p dist/lib
           cp index.html app.js styles.css favicon.svg manifest.webmanifest service-worker.js dist/
+          cp lib/generator.js dist/lib/
           touch dist/.nojekyll
       - name: Upload static artifact
         if: steps.pages.outcome == 'success'

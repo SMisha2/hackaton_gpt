@@ -1,222 +1,253 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f4ef">
-  <meta name="description" content="Превратите описание бытовой проблемы в понятное официальное обращение и план действий.">
-  <title>Бюрократический переводчик — слова, которые работают</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#f5f5f0">
+  <meta name="description" content="Опишите бытовую проблему обычными словами. Получите ясное официальное обращение и план действий.">
+  <title>Бюропереводчик — из проблемы в решение</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <script src="app.js" defer></script>
+  <script type="module" src="./app.js"></script>
 </head>
 <body>
-  <div class="page-noise" aria-hidden="true"></div>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <header class="topbar">
-    <a class="brand" href="#" aria-label="Бюропереводчик — на главную">
+    <a class="brand" href="#top" aria-label="Бюропереводчик — на главную">
       <span class="brand-mark"><span></span><span></span><span></span></span>
-      <span class="brand-name">бюро<span>переводчик</span></span>
+      <span class="brand-word">бюро<span>переводчик</span></span>
     </a>
     <nav class="topnav" aria-label="Основная навигация">
-      <a href="#how-it-works">Как это работает</a>
-      <a href="#privacy">Конфиденциальность</a>
+      <a href="#workspace">Создать обращение</a>
+      <a href="#how">Как это работает</a>
+      <a href="#privacy">Приватность</a>
     </nav>
-    <a class="topbar-cta" href="#workspace">Создать обращение <span aria-hidden="true">↗</span></a>
+    <div class="top-actions">
+      <button class="icon-button" id="themeToggle" type="button" aria-label="Переключить тему" title="Переключить тему">
+        <span class="theme-icon" aria-hidden="true">◐</span>
+      </button>
+      <button class="icon-button install-button" id="installButton" type="button" aria-label="Установить приложение" title="Установить приложение" hidden>
+        <span aria-hidden="true">↓</span>
+      </button>
+      <a class="top-cta" href="#workspace">Начать <span aria-hidden="true">↗</span></a>
+    </div>
   </header>
 
-  <main>
-    <section class="hero">
+  <main id="top">
+    <section class="hero shell">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> ПЕРЕВОДИМ С ЧЕЛОВЕЧЕСКОГО НА ОФИЦИАЛЬНЫЙ</div>
-        <h1>Проблема есть.<br><span>Слова найдутся.</span></h1>
-        <p class="hero-lead">Опишите, что случилось, своими словами. Мы соберём из этого внятное обращение и покажем, что делать дальше.</p>
-        <div class="hero-points">
-          <span><i class="point-check">✓</i> Без канцелярского квеста</span>
-          <span><i class="point-check">✓</i> С понятным планом</span>
-          <span><i class="point-check">✓</i> Можно редактировать</span>
+        <div class="eyebrow"><span class="live-dot"></span> ВАШ ПОМОЩНИК В БУМАЖНЫХ ДЕЛАХ</div>
+        <h1>Не знаете,<br>как <span>пожаловаться?</span></h1>
+        <p class="hero-lead">Расскажите, что произошло, как другу. На выходе получите внятное официальное обращение и маршрут к решению.</p>
+        <div class="hero-actions">
+          <a class="primary-button hero-button" href="#workspace">Составить обращение <span>↘</span></a>
+          <div class="hero-proof"><span class="proof-avatars"><i>✓</i><i>§</i><i>↗</i></span><span>Понятно. По делу. Без канцелярита.</span></div>
         </div>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="orbit orbit-one"></div>
-        <div class="orbit orbit-two"></div>
-        <div class="art-paper paper-back"><span></span><span></span><span></span></div>
-        <div class="art-paper paper-front">
-          <div class="paper-top"><span class="paper-seal">Б</span><span>ОБРАЩЕНИЕ</span><b>№ 001</b></div>
-          <div class="paper-line wide"></div><div class="paper-line"></div>
-          <div class="paper-space"></div>
-          <div class="paper-line wide"></div><div class="paper-line wide"></div><div class="paper-line short"></div>
-          <div class="paper-stamp">ПРИНЯТО<br><strong>В РАБОТУ</strong></div>
+
+      <div class="hero-visual" aria-label="Из обычного сообщения получается официальный документ">
+        <div class="visual-orbit orbit-a"></div>
+        <div class="visual-orbit orbit-b"></div>
+        <div class="visual-note note-left"><span class="note-dot"></span> «Опять ничего не работает…»</div>
+        <div class="visual-document">
+          <div class="doc-top"><span class="doc-symbol">Б</span><span>ОФИЦИАЛЬНОЕ ОБРАЩЕНИЕ</span><b>01 / 03</b></div>
+          <div class="doc-heading">По существу<br>поставленного вопроса</div>
+          <div class="doc-rule"></div>
+          <div class="doc-lines"><i></i><i></i><i></i><i></i></div>
+          <div class="doc-stamp">ПО ДЕЛУ</div>
+          <div class="doc-footer"><span></span><span></span></div>
         </div>
-        <div class="art-spark spark-a">✳</div><div class="art-spark spark-b">✦</div>
-        <div class="art-caption">из хаоса <span>→</span> в порядок</div>
+        <div class="visual-note note-right"><span class="note-check">✓</span> Что делать дальше</div>
+        <div class="visual-star star-one">✳</div>
+        <div class="visual-star star-two">✦</div>
+        <div class="visual-label">ХАОС <span>→</span> ЯСНОСТЬ</div>
       </div>
     </section>
 
-    <section class="workspace-section" id="workspace">
-      <div class="section-heading">
+    <section class="workspace shell" id="workspace">
+      <div class="workspace-intro">
         <div>
-          <div class="section-kicker">ВАША СИТУАЦИЯ</div>
-          <h2>Давайте разберёмся</h2>
-          <p>Не нужно подбирать правильные слова. Просто расскажите, как всё было.</p>
+          <div class="eyebrow eyebrow-muted"><span class="eyebrow-index">01</span> ВАША СИТУАЦИЯ</div>
+          <h2>Начнём с простого.</h2>
+          <p>Не нужно знать законы или правильные формулировки. Мы поможем разложить всё по полочкам.</p>
         </div>
-        <div class="heading-actions">
-          <button class="clear-button" id="clearButton" type="button">Очистить</button>
-          <button class="example-button" id="exampleButton" type="button"><span>✦</span> Заполнить примером</button>
-        </div>
+        <div class="privacy-mini"><span class="lock-icon">⌑</span><span>Ваш текст остаётся у вас<br><b>Локально по умолчанию</b></span></div>
       </div>
 
-      <div class="workspace-grid">
-        <form class="input-card" id="problemForm">
-          <div class="card-topline">
-            <div class="step-number">01</div>
-            <div><span class="mini-label">СНАЧАЛА</span><h3>Расскажите, что случилось</h3></div>
-            <span class="required-note">* обязательные поля</span>
+      <div class="work-grid">
+        <form class="form-card" id="problemForm" novalidate>
+          <div class="form-head">
+            <div class="step-badge">01</div>
+            <div class="form-head-copy"><span class="overline">СНАЧАЛА РАССКАЖИТЕ</span><h3>Что случилось?</h3></div>
+            <div class="form-step-count">ШАГ 1 <span>/</span> 2</div>
           </div>
 
-          <label class="field-label" for="category">С чем связана проблема? <span>*</span></label>
-          <div class="category-grid">
-            <label class="category-option"><input type="radio" name="category" value="housing" checked><span class="category-icon">⌂</span><span>ЖКХ и дом</span></label>
-            <label class="category-option"><input type="radio" name="category" value="shop"><span class="category-icon">▣</span><span>Магазин и услуги</span></label>
-            <label class="category-option"><input type="radio" name="category" value="work"><span class="category-icon">▤</span><span>Работа</span></label>
-            <label class="category-option"><input type="radio" name="category" value="municipal"><span class="category-icon">⌖</span><span>Городская среда</span></label>
-            <label class="category-option"><input type="radio" name="category" value="delivery"><span class="category-icon">□</span><span>Доставка</span></label>
-            <label class="category-option"><input type="radio" name="category" value="other"><span class="category-icon">＋</span><span>Другое</span></label>
-          </div>
+          <fieldset class="category-fieldset">
+            <legend>Выберите тему</legend>
+            <div class="category-grid">
+              <label class="category-card"><input type="radio" name="category" value="housing" checked><span class="category-icon">⌂</span><span class="category-name">Дом и ЖКХ</span><span class="category-check">✓</span></label>
+              <label class="category-card"><input type="radio" name="category" value="shop"><span class="category-icon">▣</span><span class="category-name">Покупки</span><span class="category-check">✓</span></label>
+              <label class="category-card"><input type="radio" name="category" value="work"><span class="category-icon">▤</span><span class="category-name">Работа</span><span class="category-check">✓</span></label>
+              <label class="category-card"><input type="radio" name="category" value="municipal"><span class="category-icon">⌖</span><span class="category-name">Город</span><span class="category-check">✓</span></label>
+              <label class="category-card"><input type="radio" name="category" value="delivery"><span class="category-icon">□</span><span class="category-name">Доставка</span><span class="category-check">✓</span></label>
+              <label class="category-card"><input type="radio" name="category" value="other"><span class="category-icon">＋</span><span class="category-name">Другое</span><span class="category-check">✓</span></label>
+            </div>
+          </fieldset>
 
-          <div class="form-row">
-            <div class="field-group">
-              <label class="field-label" for="recipient">Кому направляем?</label>
-              <input class="text-input" id="recipient" name="recipient" type="text" maxlength="120" placeholder="Например, управляющая компания">
+          <div class="field-block description-block">
+            <div class="field-label-row">
+              <label for="description">Опишите проблему своими словами <span class="required">*</span></label>
+              <button class="inline-action" id="loadExample" type="button">Показать пример <span>↗</span></button>
             </div>
-            <div class="field-group">
-              <label class="field-label" for="city">Город / населённый пункт</label>
-              <input class="text-input" id="city" name="city" type="text" maxlength="80" placeholder="Например, Якутск">
+            <textarea id="description" name="description" rows="6" maxlength="1800" required aria-describedby="descriptionHint charCount" placeholder="Например: батареи уже две недели еле тёплые, дома холодно. Звонил в управляющую компанию, но ничего не изменилось. Хочу, чтобы наконец разобрались с отоплением."></textarea>
+            <div class="textarea-bottom">
+              <span id="descriptionHint">Пишите как есть — эмоции не мешают, а помогают понять ситуацию.</span>
+              <span id="charCount" class="char-count">0 / 1800</span>
             </div>
-          </div>
-
-          <div class="field-group">
-            <label class="field-label" for="description">Что произошло? <span>*</span></label>
-            <textarea class="text-area" id="description" name="description" rows="5" maxlength="1800" required aria-describedby="descriptionHelp" placeholder="Например: уже третью неделю батареи еле тёплые, дома холодно. Звонили в управляющую компанию, но ничего не изменилось. Хотим, чтобы наконец разобрались с отоплением."></textarea>
-            <div class="field-meta" id="descriptionHelp"><span>Можно писать эмоционально и с подробностями — это нормально.</span><span id="charCount">0 / 1800</span></div>
-          </div>
-
-          <div class="form-row">
-            <div class="field-group">
-              <label class="field-label" for="since">Когда это произошло?</label>
-              <input class="text-input" id="since" name="since" type="text" maxlength="80" placeholder="Например, с 10 ноября">
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="desired">Какого результата вы хотите?</label>
-              <input class="text-input" id="desired" name="desired" type="text" maxlength="180" placeholder="Например, восстановить отопление">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field-group">
-              <label class="field-label" for="previousContact">Уже обращались по этому вопросу?</label>
-              <input class="text-input" id="previousContact" name="previousContact" type="text" maxlength="240" placeholder="Куда, когда и что ответили">
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="evidence">Какие есть подтверждения?</label>
-              <input class="text-input" id="evidence" name="evidence" type="text" maxlength="240" placeholder="Фото, чек, переписка, номер заявки">
+            <div class="quick-prompts" id="quickPrompts" aria-label="Подсказки для описания">
+              <button type="button" data-prompt="Когда именно это началось?">Когда началось?</button>
+              <button type="button" data-prompt="Что вы уже пробовали сделать?">Что уже пробовали?</button>
+              <button type="button" data-prompt="Чем это вам мешает?">Чем мешает?</button>
             </div>
           </div>
 
-          <div class="ai-mode-panel" id="aiModePanel">
-            <div class="ai-mode-copy">
-              <div class="ai-mode-title"><span class="ai-mode-chip" id="aiModeChip">ЛОКАЛЬНО</span><strong>Режим генерации</strong></div>
-              <p id="aiModeText">Сейчас работает локальный генератор. Описание остаётся в этом браузере.</p>
+          <details class="details-panel" id="detailsPanel">
+            <summary><span class="details-plus">＋</span><span><b>Добавить подробности</b><small>Это необязательно, но сделает обращение точнее</small></span><span class="details-chevron">⌄</span></summary>
+            <div class="details-content">
+              <div class="field-grid">
+                <div class="field-block">
+                  <label for="recipient">Кому направляем?</label>
+                  <input class="text-input" id="recipient" name="recipient" maxlength="120" placeholder="Например, управляющая компания">
+                </div>
+                <div class="field-block">
+                  <label for="city">Город или населённый пункт</label>
+                  <input class="text-input" id="city" name="city" maxlength="80" placeholder="Например, Якутск">
+                </div>
+                <div class="field-block">
+                  <label for="since">Когда это произошло?</label>
+                  <input class="text-input" id="since" name="since" maxlength="80" placeholder="Например, с 10 ноября">
+                </div>
+                <div class="field-block">
+                  <label for="desired">Какого результата вы хотите?</label>
+                  <input class="text-input" id="desired" name="desired" maxlength="180" placeholder="Например, устранить неисправность">
+                </div>
+                <div class="field-block">
+                  <label for="previousContact">Уже обращались раньше?</label>
+                  <input class="text-input" id="previousContact" name="previousContact" maxlength="240" placeholder="Куда, когда и что ответили">
+                </div>
+                <div class="field-block">
+                  <label for="evidence">Какие есть подтверждения?</label>
+                  <input class="text-input" id="evidence" name="evidence" maxlength="240" placeholder="Фото, чек, переписка, номер заявки">
+                </div>
+              </div>
             </div>
-            <label class="ai-toggle" for="aiModeToggle">
-              <input id="aiModeToggle" type="checkbox" disabled>
-              <span class="ai-toggle-track" aria-hidden="true"></span>
-              <span>ИИ</span>
+          </details>
+
+          <div class="generation-panel">
+            <div class="generation-heading">
+              <span class="generation-spark">✳</span>
+              <div><b>Как подготовить текст?</b><small id="aiModeText">Локально — без отправки описания на сервер.</small></div>
+            </div>
+            <label class="ai-switch-row" for="aiModeToggle">
+              <span class="switch-copy"><b>Использовать ИИ</b><small id="aiModeChip">Пока доступен только локальный режим</small></span>
+              <span class="switch"><input id="aiModeToggle" type="checkbox" disabled><i></i></span>
             </label>
+            <div class="ai-consent" id="aiConsentPanel" hidden>
+              <label class="consent-check"><input id="aiConsent" type="checkbox"><span>Я понимаю, что описание и заполненные поля будут переданы серверу проекта и внешнему ИИ-провайдеру для обработки.</span></label>
+              <p>Не указывайте паспортные данные, адрес квартиры, пароли, банковские данные и другую чувствительную информацию.</p>
+            </div>
           </div>
-          <p class="ai-consent-note" id="aiConsentNote" hidden>При включении ИИ описание ситуации и заполненные поля будут отправлены на сервер проекта и переданы выбранному ИИ-провайдеру для генерации. Не вводите персональные и чувствительные данные.</p>
 
-          <div class="privacy-hint"><span class="privacy-icon">⌑</span><span><strong>Личные данные пока не нужны.</strong> Не указывайте паспортные данные, пароли, номера карт и другую чувствительную информацию.</span></div>
-          <button class="generate-button" type="submit"><span>Собрать обращение</span><span class="button-arrow">↗</span></button>
-          <p class="form-footnote">Черновик можно будет изменить перед отправкой. Ничего не отправляется автоматически.</p>
+          <div class="form-foot">
+            <span class="foot-lock"><span>⌑</span> Ничего не отправляется автоматически</span>
+            <button class="primary-button generate-button" id="generateButton" type="submit"><span class="generate-label">Собрать обращение</span><span class="generate-arrow">↗</span></button>
+          </div>
+          <p class="form-note">Черновик можно отредактировать, скопировать или сохранить перед отправкой.</p>
         </form>
 
-        <section class="result-column" aria-label="Результат генерации">
-          <div class="result-card" id="resultCard">
-            <div class="result-head">
-              <div class="step-number step-number-purple">02</div>
-              <div><span class="mini-label">ЗАТЕМ</span><h3>Ваш официальный документ</h3></div>
-              <span class="result-status" id="resultStatus"><span></span> ОЖИДАЕТ ДАННЫХ</span>
+        <section class="result-card" id="resultCard" aria-label="Результат подготовки обращения">
+          <div class="result-top">
+            <div class="result-top-main">
+              <div class="step-badge step-badge-purple">02</div>
+              <div><span class="overline">ВАШ РЕЗУЛЬТАТ</span><h3>План решения</h3></div>
             </div>
-            <div class="result-empty" id="resultEmpty">
-              <div class="empty-illustration">
-                <div class="empty-sheet"><span></span><span></span><span></span><span></span><b>✦</b></div>
-                <div class="empty-pencil">✎</div>
-              </div>
-              <h4>Здесь появится ваше обращение</h4>
-              <p>Заполните форму слева. Мы структурируем факты, добавим вежливые формулировки и соберём документ.</p>
-              <div class="empty-steps"><span>01</span> Факты <i>→</i> <span>02</span> Обращение <i>→</i> <span>03</span> Действия</div>
-            </div>
-            <div class="result-content" id="resultContent" hidden>
-              <div class="document-toolbar">
-                <span class="document-type"><span>▤</span> ЧЕРНОВИК ОБРАЩЕНИЯ</span>
-                <span class="editable-label">Можно редактировать</span>
-              </div>
-              <textarea class="document-editor" id="documentText" aria-label="Текст официального обращения" spellcheck="true"></textarea>
-              <div class="document-actions">
-                <button class="secondary-button" id="copyButton" type="button"><span>▢</span> Копировать</button>
-                <button class="download-button" id="downloadButton" type="button"><span>↓</span> Скачать .txt</button>
-                <button class="secondary-button print-button" id="printButton" type="button"><span>↗</span> Печать / PDF</button>
-              </div>
-              <div class="document-notice"><span>i</span><p>Это черновик, а не юридическое заключение. Проверьте данные, адресата и формулировки перед отправкой.</p></div>
-              <div class="review-box" id="reviewBox" hidden>
-                <h4>Что стоит проверить</h4>
-                <ul id="reviewList"></ul>
-              </div>
-            </div>
+            <span class="result-state" id="resultStatus"><i></i> ОЖИДАЕТ ДАННЫХ</span>
           </div>
 
-          <div class="plan-card" id="planCard">
-            <div class="plan-heading">
-              <div class="step-number step-number-orange">03</div>
-              <div><span class="mini-label">И НАКОНЕЦ</span><h3>План действий</h3></div>
+          <div class="empty-state" id="resultEmpty">
+            <div class="empty-art">
+              <div class="empty-art-circle"></div>
+              <div class="empty-file"><span>Б</span><i></i><i></i><i></i><b>✦</b></div>
             </div>
-            <div class="plan-empty" id="planEmpty">После описания ситуации здесь появятся конкретные следующие шаги.</div>
-            <div class="plan-content" id="planContent" hidden>
-              <p class="plan-intro">Небольшие шаги, которые помогут довести вопрос до результата.</p>
-              <div class="plan-list" id="planList"></div>
-              <div class="plan-progress"><div class="progress-track"><span id="progressBar"></span></div><span id="progressText">0 из 4 выполнено</span></div>
-            </div>
+            <h4>Здесь появится порядок.</h4>
+            <p>Сначала опишите ситуацию. Затем мы подготовим документ и подскажем, что делать дальше.</p>
+            <div class="empty-hint"><span>01</span> Факты <i>→</i> <span>02</span> Документ <i>→</i> <span>03</span> Действия</div>
           </div>
+
+          <div class="result-ready" id="resultReady" hidden>
+            <div class="result-tabs" role="tablist" aria-label="Разделы результата">
+              <button class="result-tab is-active" type="button" role="tab" aria-selected="true" data-tab="document">Документ</button>
+              <button class="result-tab" type="button" role="tab" aria-selected="false" data-tab="plan">План действий <span class="tab-count" id="planCount">4</span></button>
+            </div>
+
+            <section class="tab-panel" id="documentPanel" role="tabpanel">
+              <div class="document-meta"><span class="document-type"><span>▤</span> ОФИЦИАЛЬНЫЙ ЧЕРНОВИК</span><span class="editable-tag">● Редактируется</span></div>
+              <textarea class="document-editor" id="documentText" aria-label="Текст официального обращения" spellcheck="true"></textarea>
+              <div class="document-stats"><span id="documentWords">0 слов</span><span>Проверьте текст перед отправкой</span></div>
+              <div class="document-actions">
+                <button class="action-button" id="copyButton" type="button"><span>▢</span> Копировать</button>
+                <button class="action-button" id="downloadButton" type="button"><span>↓</span> Скачать .txt</button>
+                <button class="action-button action-button-wide" id="printButton" type="button"><span>↗</span> Печать / PDF</button>
+              </div>
+              <div class="review-box" id="reviewBox" hidden>
+                <div class="review-heading"><span>✓</span><b>Проверить перед отправкой</b></div>
+                <ul id="reviewList"></ul>
+              </div>
+            </section>
+
+            <section class="tab-panel plan-panel" id="planPanel" role="tabpanel" hidden>
+              <div class="plan-summary"><b>Следующие шаги</b><span>Отмечайте выполненное</span></div>
+              <div class="plan-list" id="planList"></div>
+              <div class="plan-progress"><div class="progress-track"><span id="progressBar"></span></div><span id="progressText">0 из 4</span></div>
+              <div class="plan-finish" id="planFinish" hidden>Отлично. Все шаги отмечены. Не забудьте сохранить подтверждения.</div>
+            </section>
+          </div>
+          <div class="result-bottom"><span class="result-lock">⌑</span><span>Черновик не отправляется автоматически. Решение остаётся за вами.</span></div>
         </section>
       </div>
     </section>
 
-    <section class="how-section" id="how-it-works">
-      <div class="how-title">
-        <div class="section-kicker">НИЧЕГО СЛОЖНОГО</div>
-        <h2>Три шага. И уже понятнее.</h2>
+    <section class="how shell" id="how">
+      <div class="section-heading-compact">
+        <div><div class="eyebrow eyebrow-muted"><span class="eyebrow-index">02</span> ПРОСТОЙ ПРОЦЕСС</div><h2>От «что за ужас»<br>до «вопрос решён».</h2></div>
+        <p>Не нужно быть юристом, чтобы сформулировать просьбу и защитить свои интересы.</p>
       </div>
       <div class="how-grid">
-        <article class="how-item"><div class="how-icon icon-yellow">01</div><h3>Расскажите как есть</h3><p>Без шаблонов, юридических терминов и попыток звучать официально.</p></article>
-        <article class="how-item"><div class="how-icon icon-purple">02</div><h3>Получите черновик</h3><p>Структурированный текст с фактами, сутью проблемы и конкретной просьбой.</p></article>
-        <article class="how-item"><div class="how-icon icon-green">03</div><h3>Действуйте по плану</h3><p>Сохраните доказательства, направьте обращение и зафиксируйте его получение.</p></article>
+        <article class="how-card"><span class="how-number">01</span><div class="how-icon">✎</div><h3>Расскажите по-человечески</h3><p>Коротко опишите, что случилось, где и чего вы хотите добиться.</p><span class="how-line"></span></article>
+        <article class="how-card"><span class="how-number">02</span><div class="how-icon">▤</div><h3>Получите готовый черновик</h3><p>Структурированный документ с фактами, просьбой и нужными полями.</p><span class="how-line"></span></article>
+        <article class="how-card"><span class="how-number">03</span><div class="how-icon">↗</div><h3>Действуйте уверенно</h3><p>Сохраните доказательства, направьте обращение и следите за ответом.</p><span class="how-line"></span></article>
       </div>
     </section>
 
-    <section class="privacy-section" id="privacy">
-      <div class="privacy-illustration">⌑</div>
-      <div><div class="section-kicker">ВАШИ ДАННЫЕ — ВАШИ</div><h2>Вы выбираете, где обработать обращение.</h2><p>Локальный режим не отправляет текст на сервер. ИИ-режим включается отдельно и только после предупреждения о передаче описания внешнему провайдеру. Приложение не сохраняет черновики автоматически.</p></div>
-      <span class="privacy-badge"><i></i> ЛОКАЛЬНО ПО УМОЛЧАНИЮ</span>
+    <section class="privacy-band shell" id="privacy">
+      <div class="privacy-symbol">⌑</div>
+      <div class="privacy-copy"><div class="eyebrow">КОНТРОЛЬ ОСТАЁТСЯ У ВАС</div><h2>Ваша история — не наша база данных.</h2><p>В локальном режиме текст обрабатывается в браузере. ИИ включается отдельно, только после явного согласия. Приложение не сохраняет ваши обращения автоматически.</p></div>
+      <div class="privacy-stamp"><span></span> PRIVATE<br>BY DEFAULT</div>
     </section>
   </main>
 
-  <footer class="footer">
-    <a class="brand footer-brand" href="#"><span class="brand-mark"><span></span><span></span><span></span></span><span class="brand-name">бюро<span>переводчик</span></span></a>
-    <p>Понятные слова помогают решать реальные проблемы.</p>
-    <span class="footer-note">MVP · 2026</span>
+  <footer class="footer shell">
+    <a class="brand" href="#top"><span class="brand-mark"><span></span><span></span><span></span></span><span class="brand-word">бюро<span>переводчик</span></span></a>
+    <span class="footer-caption">Меньше бюрократии. Больше ясности.</span>
+    <a class="footer-top" href="#top">Наверх ↑</a>
   </footer>
+
   <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>

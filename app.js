@@ -1,227 +1,165 @@
-const form = document.querySelector("#problemForm");
-const descriptionField = document.querySelector("#description");
-const charCount = document.querySelector("#charCount");
-const resultEmpty = document.querySelector("#resultEmpty");
-const resultContent = document.querySelector("#resultContent");
-const resultStatus = document.querySelector("#resultStatus");
-const documentText = document.querySelector("#documentText");
-const planEmpty = document.querySelector("#planEmpty");
-const planContent = document.querySelector("#planContent");
-const planList = document.querySelector("#planList");
-const progressBar = document.querySelector("#progressBar");
-const progressText = document.querySelector("#progressText");
-const toast = document.querySelector("#toast");
-const aiModeToggle = document.querySelector("#aiModeToggle");
-const aiModeChip = document.querySelector("#aiModeChip");
-const aiModeText = document.querySelector("#aiModeText");
-const aiConsentNote = document.querySelector("#aiConsentNote");
-const reviewBox = document.querySelector("#reviewBox");
-const reviewList = document.querySelector("#reviewList");
-const printSheet = document.querySelector("#printSheet");
-let toastTimer;
+import { categoryData, buildLocalResult, cleanText } from "./lib/generator.js";
+
+const $ = (selector) => document.querySelector(selector);
+const form = $("#problemForm");
+const description = $("#description");
+const charCount = $("#charCount");
+const resultEmpty = $("#resultEmpty");
+const resultReady = $("#resultReady");
+const resultStatus = $("#resultStatus");
+const documentText = $("#documentText");
+const planList = $("#planList");
+const progressBar = $("#progressBar");
+const progressText = $("#progressText");
+const planFinish = $("#planFinish");
+const reviewBox = $("#reviewBox");
+const reviewList = $("#reviewList");
+const aiModeToggle = $("#aiModeToggle");
+const aiConsent = $("#aiConsent");
+const aiConsentPanel = $("#aiConsentPanel");
+const aiModeChip = $("#aiModeChip");
+const aiModeText = $("#aiModeText");
+const generateButton = $("#generateButton");
+const printSheet = $("#printSheet");
+const toast = $("#toast");
+
 let aiAvailable = false;
-
-const categoryData = {
-  housing: {
-    title: "ЖКХ и содержание дома",
-    subject: "о проверке качества жилищно-коммунальных услуг",
-    recipient: "управляющая организация",
-    ask: ["Организовать проверку изложенных обстоятельств и, при необходимости, составить акт осмотра.", "Принять меры для устранения выявленной проблемы и сообщить о планируемых сроках.", "Предоставить письменный ответ о результатах проверки и принятых мерах."],
-    plans: [
-      ["Зафиксируйте проблему", "Сделайте фотографии или видео, запишите даты и время. Для температуры, протечки или другой измеримой проблемы сохраните результаты замеров, если они есть."],
-      ["Найдите ответственного", "Проверьте квитанцию или договор управления: там обычно указана управляющая организация и её контакты."],
-      ["Передайте обращение", "Направьте заявление через официальную приёмную, ГИС ЖКХ или лично. Попросите подтвердить регистрацию."],
-      ["Сохраните подтверждение", "Запишите номер обращения и дату подачи. Сохраните копию заявления и приложенные материалы."]
-    ]
-  },
-  shop: {
-    title: "Покупки и услуги",
-    subject: "о проверке качества товара или оказанной услуги",
-    recipient: "продавец / исполнитель услуги",
-    ask: ["Рассмотреть изложенные обстоятельства и проверить документы по покупке или заказу.", "Сообщить о доступном способе урегулирования ситуации с учётом заявленных требований.", "Направить письменный ответ по результатам рассмотрения обращения."],
-    plans: [
-      ["Соберите подтверждения покупки", "Подготовьте чек, электронный заказ, гарантийные документы и переписку. Если чека нет, сохраните другие подтверждения покупки."],
-      ["Зафиксируйте недостаток", "Сделайте фото или видео товара либо результата услуги. Кратко запишите, когда и при каких условиях обнаружилась проблема."],
-      ["Обратитесь к продавцу", "Направьте письменную претензию продавцу или исполнителю и сохраните подтверждение передачи."],
-      ["Сохраните ответ", "Запишите дату обращения, регистрационный номер и полученный ответ. При необходимости уточните дальнейший порядок защиты прав потребителя."]
-    ]
-  },
-  work: {
-    title: "Трудовые отношения",
-    subject: "о рассмотрении вопроса, связанного с трудовыми отношениями",
-    recipient: "работодатель / уполномоченный представитель организации",
-    ask: ["Проверить изложенные обстоятельства и относящиеся к ним документы.", "Сообщить о принятом решении и действиях, необходимых для урегулирования ситуации.", "Предоставить письменный ответ по существу поставленных вопросов."],
-    plans: [
-      ["Соберите документы", "Сохраните трудовой договор, расчётные листки, графики, приказы и переписку, относящиеся к ситуации."],
-      ["Запишите хронологию", "Отметьте даты событий, имена участников и конкретные договорённости. Отделите подтверждённые факты от предположений."],
-      ["Подайте письменное обращение", "Направьте его работодателю или в кадровую службу способом, который подтверждает получение."],
-      ["Зафиксируйте результат", "Сохраните копию обращения и ответ. Если вопрос не урегулирован, уточните порядок обращения в компетентную трудовую инспекцию или другой уполномоченный орган."]
-    ]
-  },
-  municipal: {
-    title: "Городская и общественная инфраструктура",
-    subject: "о проверке состояния объекта городской инфраструктуры",
-    recipient: "администрация муниципального образования / ответственная служба",
-    ask: ["Проверить состояние указанного объекта или территории.", "Определить ответственную службу и, при наличии оснований, организовать необходимые работы.", "Сообщить о результатах проверки и предполагаемых сроках решения вопроса."],
-    plans: [
-      ["Уточните место", "Запишите адрес, ближайший ориентир или участок улицы. Сделайте несколько фотографий с общим видом и деталями."],
-      ["Определите ответственную службу", "Проверьте официальный сайт администрации: там обычно указаны профильные подразделения и электронная приёмная."],
-      ["Направьте сообщение", "Укажите точное местоположение, характер проблемы и желаемый результат. Сохраните номер регистрации."],
-      ["Проверьте статус", "Сохраните дату подачи и номер обращения. При отсутствии ответа уточните статус через официальный канал."]
-    ]
-  },
-  delivery: {
-    title: "Доставка и заказ",
-    subject: "о нарушении условий доставки или исполнения заказа",
-    recipient: "продавец / служба доставки",
-    ask: ["Проверить статус заказа и обстоятельства его исполнения.", "Сообщить о причинах возникшей ситуации и возможных способах её урегулирования.", "Предоставить письменный ответ и информацию о дальнейших действиях."],
-    plans: [
-      ["Найдите данные заказа", "Подготовьте номер заказа, дату оформления, подтверждение оплаты и обещанный срок доставки."],
-      ["Сохраните переписку", "Сделайте скриншоты статуса заказа, сообщений и уведомлений, относящихся к проблеме."],
-      ["Обратитесь в поддержку", "Направьте обращение продавцу или перевозчику через официальный канал и сохраните номер заявки."],
-      ["Зафиксируйте договорённость", "Сохраните ответ, согласованные сроки и итоговое решение. При изменении сроков попросите подтвердить это письменно."]
-    ]
-  },
-  other: {
-    title: "Иная бытовая ситуация",
-    subject: "о рассмотрении обращения по изложенной ситуации",
-    recipient: "ответственная организация / уполномоченное лицо",
-    ask: ["Рассмотреть изложенные обстоятельства в пределах компетенции адресата.", "При необходимости провести проверку и сообщить о возможных мерах решения вопроса.", "Предоставить письменный ответ по существу обращения."],
-    plans: [
-      ["Зафиксируйте обстоятельства", "Составьте короткую хронологию: что произошло, где, когда и кто участвовал."],
-      ["Соберите подтверждения", "Сохраните фотографии, документы, сообщения и контакты свидетелей, если они есть."],
-      ["Уточните адресата", "Найдите организацию или должностное лицо, которое отвечает за этот вопрос, на официальном сайте."],
-      ["Передайте обращение", "Используйте официальный канал, сохраните копию заявления, подтверждение получения и номер регистрации."]
-    ]
-  }
-};
-
-const phraseRules = [
-  [/\b(достало|надоело|сил больше нет|невозможно терпеть)\b/gi, "ситуация продолжается и требует рассмотрения"],
-  [/\b(ничего не делают|никто ничего не делает)\b/gi, "по имеющейся у меня информации, проблема пока не устранена"],
-  [/\b(забили на нас|игнорят|игнорируют нас)\b/gi, "обратная связь по ранее направленным сообщениям не получена"],
-  [/\b(ужасный|ужасно|кошмарный|кошмар)\b/gi, "ненадлежащий"],
-  [/\b(это полный бардак|полный бардак)\b/gi, "ситуация требует проверки и упорядочения"],
-  [/\b(обещали и пропали)\b/gi, "обещанный ответ или результат пока не предоставлен"],
-  [/\b(разберитесь уже)\b/gi, "прошу провести проверку и сообщить о принятых мерах"]
-];
-
-function cleanText(value) {
-  return value.trim().replace(/\s+/g, " ").replace(/[!?]{2,}/g, ".").replace(/[.]{2,}/g, ".");
-}
-
-function formalize(value) {
-  let result = cleanText(value);
-  for (const [pattern, replacement] of phraseRules) result = result.replace(pattern, replacement);
-  result = result.replace(/^(короче[,:]?\s*|в общем[,:]?\s*|ну вот[,:]?\s*)/i, "");
-  if (result && !/[.!?]$/.test(result)) result += ".";
-  return result;
-}
-
-function capitalize(value) {
-  return value ? value.charAt(0).toLocaleUpperCase("ru-RU") + value.slice(1) : value;
-}
-
-function selectedCategory() {
-  return form.querySelector('input[name="category"]:checked').value;
-}
-
-function buildDocument(data) {
-  const info = categoryData[data.category];
-  const recipient = data.recipient || info.recipient;
-  const cityLine = data.city ? "Населённый пункт: " + data.city : "";
-  const whenLine = data.since ? "Период / дата: " + data.since : "";
-  const desiredLine = data.desired ? "Желаемый результат: " + cleanText(data.desired) + "." : "";
-  const askLines = info.ask.map((item, index) => (index + 1) + ". " + item).join("\n");
-  const lines = [
-    "Адресат: " + recipient,
-    "от: [ФИО заявителя]",
-    cityLine,
-    "Контакт для ответа: [указать удобный способ связи]",
-    "",
-    "ОБРАЩЕНИЕ",
-    info.subject,
-    "",
-    "Прошу рассмотреть описанную ниже ситуацию.",
-    "",
-    "Суть обращения",
-    capitalize(formalize(data.description)),
-    whenLine,
-    desiredLine,
-    data.previousContact ? "Ранее предпринятые действия: " + cleanText(data.previousContact) + "." : "",
-    data.evidence ? "Имеющиеся подтверждения: " + cleanText(data.evidence) + "." : "",
-    "",
-    "В связи с изложенным прошу:",
-    askLines,
-    "",
-    "При наличии прошу учесть приложенные материалы, подтверждающие изложенные обстоятельства.",
-    "",
-    "Ответ прошу направить способом, указанным в контактных данных.",
-    "",
-    "Приложения: [перечислить документы, фотографии или иные материалы при наличии].",
-    "",
-    "Дата: [дата подачи]                         Подпись: [ФИО]"
-  ];
-  return lines.filter((line, index) => line !== "" || (index > 0 && lines[index - 1] !== "")).join("\n");
-}
-
-function updateProgress() {
-  const boxes = [...planList.querySelectorAll('input[type="checkbox"]')];
-  const done = boxes.filter((box) => box.checked).length;
-  const percent = boxes.length ? (done / boxes.length) * 100 : 0;
-  progressBar.style.width = percent + "%";
-  progressText.textContent = done + " из " + boxes.length + " выполнено";
-}
-
-function renderPlan(category, customPlan = null) {
-  const items = Array.isArray(customPlan) && customPlan.length
-    ? customPlan.map((item) => [item.title, item.description])
-    : categoryData[category].plans;
-  planList.replaceChildren();
-  items.forEach(([title, description], index) => {
-    const label = document.createElement("label");
-    label.className = "plan-step";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.setAttribute("aria-label", "Отметить шаг: " + title);
-    checkbox.addEventListener("change", updateProgress);
-    const copy = document.createElement("span");
-    copy.className = "plan-step-copy";
-    const heading = document.createElement("strong");
-    heading.textContent = (index + 1) + ". " + title;
-    const details = document.createElement("span");
-    details.textContent = description;
-    copy.append(heading, details);
-    label.append(checkbox, copy);
-    planList.append(label);
-  });
-  updateProgress();
-}
+let toastTimer = 0;
+let installPrompt = null;
+let currentCategory = "housing";
 
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("is-visible");
   window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2300);
+  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
 }
 
-descriptionField.addEventListener("input", () => {
-  descriptionField.setCustomValidity("");
-  charCount.textContent = descriptionField.value.length + " / 1800";
-});
+function getFormData() {
+  return {
+    category: form.querySelector('input[name="category"]:checked')?.value || "other",
+    description: description.value,
+    recipient: cleanText(form.elements.recipient.value),
+    city: cleanText(form.elements.city.value),
+    since: cleanText(form.elements.since.value),
+    desired: cleanText(form.elements.desired.value),
+    previousContact: cleanText(form.elements.previousContact.value),
+    evidence: cleanText(form.elements.evidence.value)
+  };
+}
 
-function renderReview(notes = []) {
-  reviewList.replaceChildren();
-  if (!Array.isArray(notes) || !notes.length) {
-    reviewBox.hidden = true;
-    return;
-  }
-  notes.slice(0, 6).forEach((note) => {
-    const item = document.createElement("li");
-    item.textContent = note;
-    reviewList.append(item);
+function updateCounter() {
+  charCount.textContent = description.value.length.toLocaleString("ru-RU") + " / 1800";
+  description.setCustomValidity(description.value.trim() ? "" : "Опишите ситуацию несколькими словами.");
+}
+
+function updateCategory() {
+  currentCategory = getFormData().category;
+  const hints = {
+    housing: ["Когда началось?", "Что уже пробовали?", "Чем мешает?"],
+    shop: ["Когда купили?", "Что не так с товаром?", "Как хотите решить?"],
+    work: ["Когда возникла проблема?", "К кому обращались?", "Какой результат нужен?"],
+    municipal: ["Где именно?", "Когда заметили?", "Что требуется сделать?"],
+    delivery: ["Когда обещали доставить?", "Что показывает статус?", "Куда уже обращались?"],
+    other: ["Когда началось?", "Кто уже знает об этом?", "Какого результата ждёте?"]
+  };
+  const prompts = $("#quickPrompts");
+  prompts.replaceChildren();
+  hints[currentCategory].forEach((hint) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = hint;
+    button.addEventListener("click", () => appendPrompt(hint.replace("?", "")));
+    prompts.append(button);
   });
-  reviewBox.hidden = false;
+  const placeholder = {
+    housing: "Например: батареи уже две недели еле тёплые, дома холодно. Звонил в управляющую компанию, но ничего не изменилось.",
+    shop: "Например: купил наушники неделю назад, один перестал работать. В магазине отправляют в сервис и не объясняют, что делать.",
+    work: "Например: зарплату задерживают уже несколько недель. Писал руководителю, но точной даты выплаты так и не назвали.",
+    municipal: "Например: возле дома большая яма на тротуаре, её не огородили. Напишите, как попросить ответственную службу проверить участок.",
+    delivery: "Например: заказ обещали привезти три дня назад. В приложении статус не меняется, поддержка не отвечает.",
+    other: "Расскажите, что произошло, когда это началось, к кому вы уже обращались и какого результата хотите."
+  };
+  description.placeholder = placeholder[currentCategory];
+}
+
+function appendPrompt(text) {
+  const separator = description.value.trim() ? " " : "";
+  description.value += separator + text + ": ";
+  description.focus();
+  description.setSelectionRange(description.value.length, description.value.length);
+  updateCounter();
+}
+
+function renderPlan(items) {
+  planList.replaceChildren();
+  items.forEach((item, index) => {
+    const label = document.createElement("label");
+    label.className = "plan-step";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.setAttribute("aria-label", "Выполнено: " + item.title);
+    checkbox.addEventListener("change", updateProgress);
+    const copy = document.createElement("span");
+    copy.className = "plan-step-copy";
+    const title = document.createElement("strong");
+    title.textContent = (index + 1) + ". " + item.title;
+    const details = document.createElement("span");
+    details.textContent = item.description;
+    copy.append(title, details);
+    label.append(checkbox, copy);
+    planList.append(label);
+  });
+  $("#planCount").textContent = String(items.length);
+  updateProgress();
+}
+
+function updateProgress() {
+  const boxes = [...planList.querySelectorAll('input[type="checkbox"]')];
+  const done = boxes.filter((box) => box.checked).length;
+  const total = boxes.length;
+  progressBar.style.width = (total ? done / total * 100 : 0) + "%";
+  progressText.textContent = done + " из " + total;
+  planFinish.hidden = done !== total || total === 0;
+}
+
+function renderReview(notes) {
+  reviewList.replaceChildren();
+  (Array.isArray(notes) ? notes : []).slice(0, 6).forEach((note) => {
+    const li = document.createElement("li");
+    li.textContent = note;
+    reviewList.append(li);
+  });
+  reviewBox.hidden = reviewList.childElementCount === 0;
+}
+
+function selectTab(name) {
+  document.querySelectorAll(".result-tab").forEach((button) => {
+    const active = button.dataset.tab === name;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  $("#documentPanel").hidden = name !== "document";
+  $("#planPanel").hidden = name !== "plan";
+}
+
+function updateDocumentStats() {
+  const text = documentText.value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  $("#documentWords").textContent = words + " слов";
+}
+
+function showGeneratedResult(result, mode) {
+  documentText.value = result.document;
+  updateDocumentStats();
+  renderPlan(result.plan);
+  renderReview(result.review_notes);
+  resultEmpty.hidden = true;
+  resultReady.hidden = false;
+  resultStatus.classList.add("is-ready");
+  resultStatus.innerHTML = "<i></i> " + (mode === "ai" ? "ПОДГОТОВЛЕНО С ИИ" : "ЧЕРНОВИК ГОТОВ");
+  selectTab("document");
+  $("#resultCard").scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 }
 
 async function requestAiDraft(data) {
@@ -244,172 +182,257 @@ async function requestAiDraft(data) {
   return payload;
 }
 
-function showGeneratedResult(data, generated, mode) {
-  documentText.value = generated.document;
-  resultEmpty.hidden = true;
-  resultContent.hidden = false;
-  planEmpty.hidden = true;
-  planContent.hidden = false;
-  resultStatus.classList.add("is-ready");
-  resultStatus.innerHTML = "<span></span> " + (mode === "ai" ? "ИИ-ЧЕРНОВИК ГОТОВ" : "ЧЕРНОВИК ГОТОВ");
-  renderPlan(data.category, generated.plan);
-  renderReview(generated.review_notes || []);
-  document.querySelector("#resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-form.addEventListener("submit", async (event) => {
+async function handleGenerate(event) {
   event.preventDefault();
-  if (!descriptionField.value.trim()) {
-    descriptionField.setCustomValidity("Опишите ситуацию несколькими словами.");
-    form.reportValidity();
+  updateCounter();
+  if (!form.reportValidity()) return;
+  const data = getFormData();
+  if (!data.description.trim()) {
+    description.focus();
+    showToast("Добавьте хотя бы пару предложений о ситуации.");
     return;
   }
-  descriptionField.setCustomValidity("");
-  if (!form.reportValidity()) return;
-  const data = {
-    category: selectedCategory(),
-    recipient: cleanText(form.elements.recipient.value),
-    city: cleanText(form.elements.city.value),
-    description: form.elements.description.value,
-    since: cleanText(form.elements.since.value),
-    desired: cleanText(form.elements.desired.value),
-    previousContact: cleanText(form.elements.previousContact.value),
-    evidence: cleanText(form.elements.evidence.value)
-  };
-  const submitButton = form.querySelector('button[type="submit"]');
-  const originalButton = submitButton.innerHTML;
-  submitButton.disabled = true;
-  submitButton.innerHTML = "<span>Готовим обращение…</span><span class=\"button-arrow\">…</span>";
+  if (aiModeToggle.checked && !aiConsent.checked) {
+    aiConsent.focus();
+    showToast("Подтвердите передачу текста ИИ-провайдеру или выключите ИИ.");
+    return;
+  }
+
+  const original = generateButton.innerHTML;
+  generateButton.disabled = true;
+  generateButton.innerHTML = '<span class="generate-label">Готовим ваш документ…</span><span class="generate-arrow">…</span>';
   resultStatus.classList.remove("is-ready");
-  resultStatus.innerHTML = "<span></span> ФОРМИРУЕМ ЧЕРНОВИК";
+  resultStatus.innerHTML = "<i></i> СОБИРАЕМ РЕЗУЛЬТАТ";
 
   try {
     if (aiModeToggle.checked && aiAvailable) {
       try {
         const generated = await requestAiDraft(data);
-        showGeneratedResult(data, generated, "ai");
-        showToast("ИИ подготовил черновик. Проверьте факты перед отправкой.");
+        showGeneratedResult(generated, "ai");
+        showToast("Черновик готов. Проверьте даты, факты и адресата.");
       } catch (error) {
-        showGeneratedResult(data, { document: buildDocument(data), plan: categoryData[data.category].plans.map(([title, description]) => ({ title, description })), review_notes: ["ИИ-генерация не завершилась. Использован локальный шаблон.", "Проверьте адресата, факты, даты и приложения перед отправкой."] }, "local");
-        showToast(error.status === 503 ? "ИИ временно недоступен. Создан локальный черновик." : "Не удалось связаться с ИИ. Создан локальный черновик.");
+        const fallback = buildLocalResult(data);
+        fallback.review_notes.unshift("ИИ не ответил. Ниже показан локальный шаблонный черновик.");
+        showGeneratedResult(fallback, "local");
+        showToast(error.status === 503 ? "ИИ не настроен. Подготовлен локальный черновик." : "ИИ временно недоступен. Подготовлен локальный черновик.");
       }
     } else {
-      showGeneratedResult(data, {
-        document: buildDocument(data),
-        plan: categoryData[data.category].plans.map(([title, description]) => ({ title, description })),
-        review_notes: [
-          "Замените поля в квадратных скобках на свои данные.",
-          "Проверьте адресата, даты и точность всех изложенных фактов.",
-          "Приложите только те документы и материалы, которые действительно существуют."
-        ]
-      }, "local");
+      showGeneratedResult(buildLocalResult(data), "local");
+      showToast("Готово. Теперь проверьте черновик и план действий.");
     }
   } finally {
-    submitButton.disabled = false;
-    submitButton.innerHTML = originalButton;
+    generateButton.disabled = false;
+    generateButton.innerHTML = original;
   }
-});
+}
 
-document.querySelector("#exampleButton").addEventListener("click", () => {
-  form.querySelector('input[name="category"][value="housing"]').checked = true;
-  form.elements.recipient.value = "Управляющая компания";
-  form.elements.city.value = "Якутск";
-  form.elements.description.value = "Уже третью неделю батареи еле тёплые, дома очень холодно. Звонили в управляющую компанию, но ничего не делают. Достало, невозможно терпеть. Разберитесь уже с отоплением.";
-  form.elements.since.value = "с начала ноября";
-  form.elements.desired.value = "Проверить отопление и восстановить нормальную подачу тепла";
-  form.elements.previousContact.value = "Звонили в управляющую компанию на прошлой неделе, письменного ответа не получили";
-  form.elements.evidence.value = "Фото термометра и переписка с управляющей компанией";
-  charCount.textContent = descriptionField.value.length + " / 1800";
-  showToast("Пример заполнен. Нажмите «Собрать обращение».");
-  descriptionField.focus();
-});
-
-document.querySelector("#clearButton").addEventListener("click", () => {
-  form.reset();
-  descriptionField.setCustomValidity("");
-  charCount.textContent = "0 / 1800";
-  resultEmpty.hidden = false;
-  resultContent.hidden = true;
-  planEmpty.hidden = false;
-  planContent.hidden = true;
-  resultStatus.classList.remove("is-ready");
-  resultStatus.innerHTML = "<span></span> ОЖИДАЕТ ДАННЫХ";
-  documentText.value = "";
-  reviewBox.hidden = true;
-  aiConsentNote.hidden = true;
-  planList.replaceChildren();
-  progressBar.style.width = "0%";
-  progressText.textContent = "0 из 4 выполнено";
-  showToast("Форма и результат очищены");
-});
-
-document.querySelector("#copyButton").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(documentText.value);
-    showToast("Текст обращения скопирован");
-  } catch {
-    documentText.focus();
-    documentText.select();
-    const copied = document.execCommand("copy");
-    showToast(copied ? "Текст обращения скопирован" : "Выделите текст и скопируйте вручную");
+function setAiAvailability(available) {
+  aiAvailable = available;
+  aiModeToggle.disabled = !available;
+  if (!available) {
+    aiModeToggle.checked = false;
+    aiConsent.checked = false;
+    aiConsentPanel.hidden = true;
+    aiModeChip.textContent = "Локальный режим";
+    aiModeText.textContent = "Текст остаётся в этом браузере — ничего не отправляется.";
+  } else {
+    aiModeChip.textContent = "Доступен на сервере";
+    aiModeText.textContent = "ИИ может лучше понять контекст и подготовить персональный план.";
   }
-});
-
-document.querySelector("#downloadButton").addEventListener("click", () => {
-  const blob = new Blob(["\uFEFF", documentText.value], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "obrashchenie.txt";
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-  showToast("Файл подготовлен");
-});
-
-document.querySelector("#printButton").addEventListener("click", () => {
-  printSheet.textContent = documentText.value;
-  window.print();
-});
-
-aiModeToggle.addEventListener("change", () => {
-  aiConsentNote.hidden = !aiModeToggle.checked;
-  if (aiModeToggle.checked) {
-    showToast("ИИ получит данные из формы. Не добавляйте личную информацию.");
-  }
-});
+}
 
 async function checkAiAvailability() {
   try {
     const endpoint = new URL("api/status", document.baseURI);
     const response = await fetch(endpoint, { cache: "no-store" });
-    if (!response.ok) return;
+    if (!response.ok) return setAiAvailability(false);
     const status = await response.json();
-    aiAvailable = status.available === true;
+    setAiAvailability(status.available === true);
   } catch {
-    aiAvailable = false;
-  }
-  if (aiAvailable) {
-    aiModeToggle.disabled = false;
-    aiModeChip.textContent = "ДОСТУПЕН";
-    aiModeChip.classList.add("is-ai");
-    aiModeText.textContent = "Можно включить ИИ-генерацию. Передача описания провайдеру будет выполняться только после включения режима.";
-  } else {
-    aiModeToggle.disabled = true;
-    aiModeToggle.checked = false;
-    aiConsentNote.hidden = true;
-    aiModeChip.textContent = "ЛОКАЛЬНО";
-    aiModeText.textContent = "ИИ-сервер пока не настроен. Работает локальный генератор, данные остаются в браузере.";
+    setAiAvailability(false);
   }
 }
 
-checkAiAvailability();
+function loadExample(category = "housing") {
+  const examples = {
+    housing: {
+      recipient: "Управляющая компания",
+      city: "Якутск",
+      description: "Уже третью неделю батареи еле тёплые, дома очень холодно. Звонили в управляющую компанию, но ничего не меняется. Достало, невозможно терпеть. Разберитесь уже с отоплением.",
+      since: "С начала ноября",
+      desired: "Проверить отопление и восстановить нормальную подачу тепла",
+      previousContact: "Звонили в управляющую компанию на прошлой неделе, письменного ответа не получили",
+      evidence: "Фото термометра и переписка с управляющей компанией"
+    },
+    shop: {
+      recipient: "Магазин, в котором приобретён товар",
+      city: "",
+      description: "Купил наушники, через несколько дней один перестал работать. В магазине сказали, что ничем не могут помочь. Хочу, чтобы проверили товар и объяснили, как решить вопрос.",
+      since: "На прошлой неделе",
+      desired: "Проверить товар и предложить решение в рамках правил покупки",
+      previousContact: "Обращался к продавцу устно",
+      evidence: "Электронный чек и фотографии товара"
+    },
+    work: {
+      recipient: "Работодатель",
+      city: "",
+      description: "Зарплату задерживают, а точную дату выплаты никто не называет. Я уже писал руководителю, но ответа по срокам не получил. Хочу получить понятное объяснение ситуации.",
+      since: "С конца прошлого месяца",
+      desired: "Получить разъяснение по срокам выплаты",
+      previousContact: "Писал руководителю в рабочем чате",
+      evidence: "Переписка и расчётный листок"
+    },
+    municipal: {
+      recipient: "Администрация муниципального образования",
+      city: "Якутск",
+      description: "Возле нашего дома большая яма на тротуаре. Люди обходят её по проезжей части, а ограждения нет. Прошу проверить этот участок и сообщить, какие меры планируется принять.",
+      since: "Заметили несколько дней назад",
+      desired: "Проверить участок и организовать необходимые меры безопасности",
+      previousContact: "",
+      evidence: "Фотографии участка"
+    },
+    delivery: {
+      recipient: "Продавец и служба доставки",
+      city: "",
+      description: "Заказ обещали привезти три дня назад, но он так и не приехал. В приложении статус не меняется, поддержка не отвечает. Хочу узнать, где заказ и когда будет решение.",
+      since: "Три дня назад",
+      desired: "Получить информацию о заказе и согласовать дальнейшие действия",
+      previousContact: "Писал в чат поддержки",
+      evidence: "Номер заказа и скриншоты статуса"
+    }
+  };
+  const data = examples[category] || examples.housing;
+  form.querySelector('input[name="category"][value="' + category + '"]').checked = true;
+  for (const [key, value] of Object.entries(data)) form.elements[key].value = value;
+  updateCategory();
+  updateCounter();
+  $("#detailsPanel").open = true;
+  description.focus();
+  showToast("Пример загружен. Измените его под свою ситуацию.");
+}
 
+function clearAll() {
+  form.reset();
+  aiConsent.checked = false;
+  aiConsentPanel.hidden = true;
+  description.setCustomValidity("");
+  updateCounter();
+  updateCategory();
+  resultReady.hidden = true;
+  resultEmpty.hidden = false;
+  resultStatus.classList.remove("is-ready");
+  resultStatus.innerHTML = "<i></i> ОЖИДАЕТ ДАННЫХ";
+  documentText.value = "";
+  planList.replaceChildren();
+  reviewBox.hidden = true;
+  planFinish.hidden = true;
+  progressBar.style.width = "0%";
+  progressText.textContent = "0 из 0";
+  selectTab("document");
+  showToast("Форма и результат очищены.");
+}
 
-if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
-  const serviceWorkerUrl = new URL("service-worker.js", document.baseURI);
-  navigator.serviceWorker.register(serviceWorkerUrl).catch(() => {
-    // The application remains usable even when offline installation is unavailable.
+async function copyDocument() {
+  try {
+    await navigator.clipboard.writeText(documentText.value);
+    showToast("Текст скопирован.");
+  } catch {
+    documentText.focus();
+    documentText.select();
+    const success = document.execCommand("copy");
+    showToast(success ? "Текст скопирован." : "Выделите текст и скопируйте вручную.");
+  }
+}
+
+function downloadDocument() {
+  const blob = new Blob(["\uFEFF", documentText.value], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "obrashchenie-" + new Date().toISOString().slice(0, 10) + ".txt";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast("Файл подготовлен.");
+}
+
+function updateTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("bureau-theme", theme);
+  const dark = theme === "dark";
+  $("#themeToggle").querySelector(".theme-icon").textContent = dark ? "☼" : "◐";
+  $("#themeToggle").setAttribute("aria-label", dark ? "Включить светлую тему" : "Включить тёмную тему");
+  document.querySelector('meta[name="theme-color"]').content = dark ? "#151815" : "#f5f5f0";
+}
+
+function registerPwa() {
+  if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
+    const url = new URL("service-worker.js", document.baseURI);
+    navigator.serviceWorker.register(url).catch(() => {});
+  }
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    installPrompt = event;
+    $("#installButton").hidden = false;
+  });
+  $("#installButton").addEventListener("click", async () => {
+    if (!installPrompt) {
+      showToast("Откройте меню браузера и выберите «Установить приложение».");
+      return;
+    }
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+    $("#installButton").hidden = true;
   });
 }
+
+form.addEventListener("submit", handleGenerate);
+description.addEventListener("input", updateCounter);
+form.querySelectorAll('input[name="category"]').forEach((radio) => radio.addEventListener("change", updateCategory));
+
+$("#loadExample").addEventListener("click", () => loadExample(currentCategory));
+$("#clearButton")?.addEventListener("click", clearAll);
+$("#copyButton").addEventListener("click", copyDocument);
+$("#downloadButton").addEventListener("click", downloadDocument);
+$("#printButton").addEventListener("click", () => {
+  printSheet.textContent = documentText.value;
+  window.print();
+});
+documentText.addEventListener("input", updateDocumentStats);
+document.querySelectorAll(".result-tab").forEach((button) => button.addEventListener("click", () => selectTab(button.dataset.tab)));
+
+aiModeToggle.addEventListener("change", () => {
+  aiConsentPanel.hidden = !aiModeToggle.checked;
+  aiConsent.checked = false;
+  if (aiModeToggle.checked) showToast("Подтвердите согласие перед отправкой текста ИИ.");
+});
+
+$("#themeToggle").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  updateTheme(next);
+});
+
+$("#quickPrompts").addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-prompt]");
+  if (button) appendPrompt(button.dataset.prompt);
+});
+
+window.addEventListener("scroll", () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  $("#scrollProgress").style.width = (max > 0 ? window.scrollY / max * 100 : 0) + "%";
+}, { passive: true });
+
+try {
+  const savedTheme = localStorage.getItem("bureau-theme");
+  const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  updateTheme(savedTheme || preferred);
+} catch {
+  updateTheme("light");
+}
+
+updateCounter();
+updateCategory();
+checkAiAvailability();
+registerPwa();
