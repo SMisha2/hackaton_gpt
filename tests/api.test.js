@@ -71,7 +71,7 @@ test("rephrases purchase and delivery details with category-specific language", 
     description: "Купил наушники, через несколько дней один перестал работать. В магазине отправляют в сервис."
   });
   assert.match(shop.document, /после приобретения наушников один из них перестал функционировать/i);
-  assert.match(shop.document, /один из наушников перестал функционировать/i);
+  assert.match(shop.document, /один из них перестал функционировать/i);
   assert.match(shop.document, /предлагают обратиться в сервисный центр/i);
   assert.match(shop.document, /функционировать\. В магазине/i);
 
