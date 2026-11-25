@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="description" content="Превратите описание бытовой проблемы в понятное официальное обращение и план действий.">
+  <title>Бюрократический переводчик — слова, которые работают</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="page-noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Бюропереводчик — на главную">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span class="brand-name">бюро<span>переводчик</span></span>
+    </a>
+    <nav class="topnav" aria-label="Основная навигация">
+      <a href="#how-it-works">Как это работает</a>
+      <a href="#privacy">Конфиденциальность</a>
+    </nav>
+    <a class="topbar-cta" href="#workspace">Создать обращение <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> ПЕРЕВОДИМ С ЧЕЛОВЕЧЕСКОГО НА ОФИЦИАЛЬНЫЙ</div>
+        <h1>Проблема есть.<br><span>Слова найдутся.</span></h1>
+        <p class="hero-lead">Опишите, что случилось, своими словами. Мы соберём из этого внятное обращение и покажем, что делать дальше.</p>
+        <div class="hero-points">
+          <span><i class="point-check">✓</i> Без канцелярского квеста</span>
+          <span><i class="point-check">✓</i> С понятным планом</span>
+          <span><i class="point-check">✓</i> Можно редактировать</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="art-paper paper-back"><span></span><span></span><span></span></div>
+        <div class="art-paper paper-front">
+          <div class="paper-top"><span class="paper-seal">Б</span><span>ОБРАЩЕНИЕ</span><b>№ 001</b></div>
+          <div class="paper-line wide"></div><div class="paper-line"></div>
+          <div class="paper-space"></div>
+          <div class="paper-line wide"></div><div class="paper-line wide"></div><div class="paper-line short"></div>
+          <div class="paper-stamp">ПРИНЯТО<br><strong>В РАБОТУ</strong></div>
+        </div>
+        <div class="art-spark spark-a">✳</div><div class="art-spark spark-b">✦</div>
+        <div class="art-caption">из хаоса <span>→</span> в порядок</div>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="workspace">
+      <div class="section-heading">
+        <div>
+          <div class="section-kicker">ВАША СИТУАЦИЯ</div>
+          <h2>Давайте разберёмся</h2>
+          <p>Не нужно подбирать правильные слова. Просто расскажите, как всё было.</p>
+        </div>
+        <button class="example-button" id="exampleButton" type="button"><span>✦</span> Заполнить примером</button>
+      </div>
+
+      <div class="workspace-grid">
+        <form class="input-card" id="problemForm">
+          <div class="card-topline">
+            <div class="step-number">01</div>
+            <div><span class="mini-label">СНАЧАЛА</span><h3>Расскажите, что случилось</h3></div>
+            <span class="required-note">* обязательные поля</span>
+          </div>
+
+          <label class="field-label" for="category">С чем связана проблема? <span>*</span></label>
+          <div class="category-grid">
+            <label class="category-option"><input type="radio" name="category" value="housing" checked><span class="category-icon">⌂</span><span>ЖКХ и дом</span></label>
+            <label class="category-option"><input type="radio" name="category" value="shop"><span class="category-icon">▣</span><span>Магазин и услуги</span></label>
+            <label class="category-option"><input type="radio" name="category" value="work"><span class="category-icon">▤</span><span>Работа</span></label>
+            <label class="category-option"><input type="radio" name="category" value="municipal"><span class="category-icon">⌖</span><span>Городская среда</span></label>
+            <label class="category-option"><input type="radio" name="category" value="delivery"><span class="category-icon">□</span><span>Доставка</span></label>
+            <label class="category-option"><input type="radio" name="category" value="other"><span class="category-icon">＋</span><span>Другое</span></label>
+          </div>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="recipient">Кому направляем?</label>
+              <input class="text-input" id="recipient" name="recipient" type="text" maxlength="120" placeholder="Например, управляющая компания">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="city">Город / населённый пункт</label>
+              <input class="text-input" id="city" name="city" type="text" maxlength="80" placeholder="Например, Якутск">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="description">Что произошло? <span>*</span></label>
+            <textarea class="text-area" id="description" name="description" rows="5" maxlength="1800" required placeholder="Например: уже третью неделю батареи еле тёплые, дома холодно. Звонили в управляющую компанию, но ничего не изменилось. Хотим, чтобы наконец разобрались с отоплением."></textarea>
+            <div class="field-meta"><span>Можно писать эмоционально и с подробностями — это нормально.</span><span id="charCount">0 / 1800</span></div>
+          </div>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="since">Когда это произошло?</label>
+              <input class="text-input" id="since" name="since" type="text" maxlength="80" placeholder="Например, с 10 ноября">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="desired">Какого результата вы хотите?</label>
+              <input class="text-input" id="desired" name="desired" type="text" maxlength="180" placeholder="Например, восстановить отопление">
+            </div>
+          </div>
+
+          <div class="privacy-hint"><span class="privacy-icon">⌑</span><span><strong>Личные данные пока не нужны.</strong> Не указывайте паспортные данные, пароли, номера карт и другую чувствительную информацию.</span></div>
+          <button class="generate-button" type="submit"><span>Собрать обращение</span><span class="button-arrow">↗</span></button>
+          <p class="form-footnote">Черновик можно будет изменить перед отправкой.</p>
+        </form>
+
+        <section class="result-column" aria-label="Результат генерации">
+          <div class="result-card" id="resultCard">
+            <div class="result-head">
+              <div class="step-number step-number-purple">02</div>
+              <div><span class="mini-label">ЗАТЕМ</span><h3>Ваш официальный документ</h3></div>
+              <span class="result-status" id="resultStatus"><span></span> ОЖИДАЕТ ДАННЫХ</span>
+            </div>
+            <div class="result-empty" id="resultEmpty">
+              <div class="empty-illustration">
+                <div class="empty-sheet"><span></span><span></span><span></span><span></span><b>✦</b></div>
+                <div class="empty-pencil">✎</div>
+              </div>
+              <h4>Здесь появится ваше обращение</h4>
+              <p>Заполните форму слева. Мы структурируем факты, добавим вежливые формулировки и соберём документ.</p>
+              <div class="empty-steps"><span>01</span> Факты <i>→</i> <span>02</span> Обращение <i>→</i> <span>03</span> Действия</div>
+            </div>
+            <div class="result-content" id="resultContent" hidden>
+              <div class="document-toolbar">
+                <span class="document-type"><span>▤</span> ЧЕРНОВИК ОБРАЩЕНИЯ</span>
+                <span class="editable-label">Можно редактировать</span>
+              </div>
+              <textarea class="document-editor" id="documentText" aria-label="Текст официального обращения" spellcheck="true"></textarea>
+              <div class="document-actions">
+                <button class="secondary-button" id="copyButton" type="button"><span>▢</span> Копировать</button>
+                <button class="download-button" id="downloadButton" type="button"><span>↓</span> Скачать .txt</button>
+              </div>
+              <div class="document-notice"><span>i</span><p>Это черновик, а не юридическое заключение. Проверьте данные, адресата и формулировки перед отправкой.</p></div>
+            </div>
+          </div>
+
+          <div class="plan-card" id="planCard">
+            <div class="plan-heading">
+              <div class="step-number step-number-orange">03</div>
+              <div><span class="mini-label">И НАКОНЕЦ</span><h3>План действий</h3></div>
+            </div>
+            <div class="plan-empty" id="planEmpty">После описания ситуации здесь появятся конкретные следующие шаги.</div>
+            <div class="plan-content" id="planContent" hidden>
+              <p class="plan-intro">Небольшие шаги, которые помогут довести вопрос до результата.</p>
+              <div class="plan-list" id="planList"></div>
+              <div class="plan-progress"><div class="progress-track"><span id="progressBar"></span></div><span id="progressText">0 из 4 выполнено</span></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="how-section" id="how-it-works">
+      <div class="how-title">
+        <div class="section-kicker">НИЧЕГО СЛОЖНОГО</div>
+        <h2>Три шага. И уже понятнее.</h2>
+      </div>
+      <div class="how-grid">
+        <article class="how-item"><div class="how-icon icon-yellow">01</div><h3>Расскажите как есть</h3><p>Без шаблонов, юридических терминов и попыток звучать официально.</p></article>
+        <article class="how-item"><div class="how-icon icon-purple">02</div><h3>Получите черновик</h3><p>Структурированный текст с фактами, сутью проблемы и конкретной просьбой.</p></article>
+        <article class="how-item"><div class="how-icon icon-green">03</div><h3>Действуйте по плану</h3><p>Сохраните доказательства, направьте обращение и зафиксируйте его получение.</p></article>
+      </div>
+    </section>
+
+    <section class="privacy-section" id="privacy">
+      <div class="privacy-illustration">⌑</div>
+      <div><div class="section-kicker">ВАШИ ДАННЫЕ — ВАШИ</div><h2>Не отправляем вашу историю на сервер.</h2><p>В этой версии генерация работает прямо в браузере. Текст обращения не сохраняется и никуда не отправляется автоматически. Скачивайте и отправляйте документ только после проверки.</p></div>
+      <span class="privacy-badge"><i></i> ЛОКАЛЬНАЯ ОБРАБОТКА</span>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a class="brand footer-brand" href="#"><span class="brand-mark"><span></span><span></span><span></span></span><span class="brand-name">бюро<span>переводчик</span></span></a>
+    <p>Понятные слова помогают решать реальные проблемы.</p>
+    <span class="footer-note">MVP · 2026</span>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
