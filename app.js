@@ -11,7 +11,15 @@ const planList = document.querySelector("#planList");
 const progressBar = document.querySelector("#progressBar");
 const progressText = document.querySelector("#progressText");
 const toast = document.querySelector("#toast");
+const aiModeToggle = document.querySelector("#aiModeToggle");
+const aiModeChip = document.querySelector("#aiModeChip");
+const aiModeText = document.querySelector("#aiModeText");
+const aiConsentNote = document.querySelector("#aiConsentNote");
+const reviewBox = document.querySelector("#reviewBox");
+const reviewList = document.querySelector("#reviewList");
+const printSheet = document.querySelector("#printSheet");
 let toastTimer;
+let aiAvailable = false;
 
 const categoryData = {
   housing: {
@@ -140,6 +148,8 @@ function buildDocument(data) {
     capitalize(formalize(data.description)),
     whenLine,
     desiredLine,
+    data.previousContact ? "Ранее предпринятые действия: " + cleanText(data.previousContact) + "." : "",
+    data.evidence ? "Имеющиеся подтверждения: " + cleanText(data.evidence) + "." : "",
     "",
     "В связи с изложенным прошу:",
     askLines,
@@ -163,8 +173,10 @@ function updateProgress() {
   progressText.textContent = done + " из " + boxes.length + " выполнено";
 }
 
-function renderPlan(category) {
-  const items = categoryData[category].plans;
+function renderPlan(category, customPlan = null) {
+  const items = Array.isArray(customPlan) && customPlan.length
+    ? customPlan.map((item) => [item.title, item.description])
+    : categoryData[category].plans;
   planList.replaceChildren();
   items.forEach(([title, description], index) => {
     const label = document.createElement("label");
@@ -197,7 +209,53 @@ descriptionField.addEventListener("input", () => {
   charCount.textContent = descriptionField.value.length + " / 1800";
 });
 
-form.addEventListener("submit", (event) => {
+function renderReview(notes = []) {
+  reviewList.replaceChildren();
+  if (!Array.isArray(notes) || !notes.length) {
+    reviewBox.hidden = true;
+    return;
+  }
+  notes.slice(0, 6).forEach((note) => {
+    const item = document.createElement("li");
+    item.textContent = note;
+    reviewList.append(item);
+  });
+  reviewBox.hidden = false;
+}
+
+async function requestAiDraft(data) {
+  const response = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+    body: JSON.stringify({ consent: true, ...data })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(payload.error || "AI_REQUEST_FAILED");
+    error.status = response.status;
+    throw error;
+  }
+  if (!payload || typeof payload.document !== "string" || !Array.isArray(payload.plan)) {
+    throw new Error("INVALID_AI_RESPONSE");
+  }
+  return payload;
+}
+
+function showGeneratedResult(data, generated, mode) {
+  documentText.value = generated.document;
+  resultEmpty.hidden = true;
+  resultContent.hidden = false;
+  planEmpty.hidden = true;
+  planContent.hidden = false;
+  resultStatus.classList.add("is-ready");
+  resultStatus.innerHTML = "<span></span> " + (mode === "ai" ? "ИИ-ЧЕРНОВИК ГОТОВ" : "ЧЕРНОВИК ГОТОВ");
+  renderPlan(data.category, generated.plan);
+  renderReview(generated.review_notes || []);
+  document.querySelector("#resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!form.reportValidity()) return;
   const data = {
@@ -206,17 +264,42 @@ form.addEventListener("submit", (event) => {
     city: cleanText(form.elements.city.value),
     description: form.elements.description.value,
     since: cleanText(form.elements.since.value),
-    desired: cleanText(form.elements.desired.value)
+    desired: cleanText(form.elements.desired.value),
+    previousContact: cleanText(form.elements.previousContact.value),
+    evidence: cleanText(form.elements.evidence.value)
   };
-  documentText.value = buildDocument(data);
-  resultEmpty.hidden = true;
-  resultContent.hidden = false;
-  planEmpty.hidden = true;
-  planContent.hidden = false;
-  resultStatus.classList.add("is-ready");
-  resultStatus.innerHTML = "<span></span> ЧЕРНОВИК ГОТОВ";
-  renderPlan(data.category);
-  document.querySelector("#resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  const submitButton = form.querySelector('button[type="submit"]');
+  const originalButton = submitButton.innerHTML;
+  submitButton.disabled = true;
+  submitButton.innerHTML = "<span>Готовим обращение…</span><span class=\"button-arrow\">…</span>";
+  resultStatus.classList.remove("is-ready");
+  resultStatus.innerHTML = "<span></span> ФОРМИРУЕМ ЧЕРНОВИК";
+
+  try {
+    if (aiModeToggle.checked && aiAvailable) {
+      try {
+        const generated = await requestAiDraft(data);
+        showGeneratedResult(data, generated, "ai");
+        showToast("ИИ подготовил черновик. Проверьте факты перед отправкой.");
+      } catch (error) {
+        showGeneratedResult(data, { document: buildDocument(data), plan: categoryData[data.category].plans.map(([title, description]) => ({ title, description })), review_notes: ["ИИ-генерация не завершилась. Использован локальный шаблон.", "Проверьте адресата, факты, даты и приложения перед отправкой."] }, "local");
+        showToast(error.status === 503 ? "ИИ временно недоступен. Создан локальный черновик." : "Не удалось связаться с ИИ. Создан локальный черновик.");
+      }
+    } else {
+      showGeneratedResult(data, {
+        document: buildDocument(data),
+        plan: categoryData[data.category].plans.map(([title, description]) => ({ title, description })),
+        review_notes: [
+          "Замените поля в квадратных скобках на свои данные.",
+          "Проверьте адресата, даты и точность всех изложенных фактов.",
+          "Приложите только те документы и материалы, которые действительно существуют."
+        ]
+      }, "local");
+    }
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalButton;
+  }
 });
 
 document.querySelector("#exampleButton").addEventListener("click", () => {
@@ -226,6 +309,8 @@ document.querySelector("#exampleButton").addEventListener("click", () => {
   form.elements.description.value = "Уже третью неделю батареи еле тёплые, дома очень холодно. Звонили в управляющую компанию, но ничего не делают. Достало, невозможно терпеть. Разберитесь уже с отоплением.";
   form.elements.since.value = "с начала ноября";
   form.elements.desired.value = "Проверить отопление и восстановить нормальную подачу тепла";
+  form.elements.previousContact.value = "Звонили в управляющую компанию на прошлой неделе, письменного ответа не получили";
+  form.elements.evidence.value = "Фото термометра и переписка с управляющей компанией";
   charCount.textContent = descriptionField.value.length + " / 1800";
   showToast("Пример заполнен. Нажмите «Собрать обращение».");
   descriptionField.focus();
@@ -255,3 +340,40 @@ document.querySelector("#downloadButton").addEventListener("click", () => {
   URL.revokeObjectURL(url);
   showToast("Файл подготовлен");
 });
+
+document.querySelector("#printButton").addEventListener("click", () => {
+  printSheet.textContent = documentText.value;
+  window.print();
+});
+
+aiModeToggle.addEventListener("change", () => {
+  aiConsentNote.hidden = !aiModeToggle.checked;
+  if (aiModeToggle.checked) {
+    showToast("ИИ получит данные из формы. Не добавляйте личную информацию.");
+  }
+});
+
+async function checkAiAvailability() {
+  try {
+    const response = await fetch("/api/status", { cache: "no-store" });
+    if (!response.ok) return;
+    const status = await response.json();
+    aiAvailable = status.available === true;
+  } catch {
+    aiAvailable = false;
+  }
+  if (aiAvailable) {
+    aiModeToggle.disabled = false;
+    aiModeChip.textContent = "ДОСТУПЕН";
+    aiModeChip.classList.add("is-ai");
+    aiModeText.textContent = "Можно включить ИИ-генерацию. Передача описания провайдеру будет выполняться только после включения режима.";
+  } else {
+    aiModeToggle.disabled = true;
+    aiModeToggle.checked = false;
+    aiConsentNote.hidden = true;
+    aiModeChip.textContent = "ЛОКАЛЬНО";
+    aiModeText.textContent = "ИИ-сервер пока не настроен. Работает локальный генератор, данные остаются в браузере.";
+  }
+}
+
+checkAiAvailability();

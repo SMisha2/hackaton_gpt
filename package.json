@@ -1,0 +1,13 @@
+{
+  "name": "bureaucratic-translator",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check app.js && node --check api/generate.js && node --check api/status.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

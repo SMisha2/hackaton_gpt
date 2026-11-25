@@ -107,6 +107,29 @@
               <input class="text-input" id="desired" name="desired" type="text" maxlength="180" placeholder="Например, восстановить отопление">
             </div>
           </div>
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="previousContact">Уже обращались по этому вопросу?</label>
+              <input class="text-input" id="previousContact" name="previousContact" type="text" maxlength="240" placeholder="Куда, когда и что ответили">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="evidence">Какие есть подтверждения?</label>
+              <input class="text-input" id="evidence" name="evidence" type="text" maxlength="240" placeholder="Фото, чек, переписка, номер заявки">
+            </div>
+          </div>
+
+          <div class="ai-mode-panel" id="aiModePanel">
+            <div class="ai-mode-copy">
+              <div class="ai-mode-title"><span class="ai-mode-chip" id="aiModeChip">ЛОКАЛЬНО</span><strong>Режим генерации</strong></div>
+              <p id="aiModeText">Сейчас работает локальный генератор. Описание остаётся в этом браузере.</p>
+            </div>
+            <label class="ai-toggle" for="aiModeToggle">
+              <input id="aiModeToggle" type="checkbox" disabled>
+              <span class="ai-toggle-track" aria-hidden="true"></span>
+              <span>ИИ</span>
+            </label>
+          </div>
+          <p class="ai-consent-note" id="aiConsentNote" hidden>При включении ИИ описание ситуации и заполненные поля будут отправлены на сервер проекта и переданы выбранному ИИ-провайдеру для генерации. Не вводите персональные и чувствительные данные.</p>
 
           <div class="privacy-hint"><span class="privacy-icon">⌑</span><span><strong>Личные данные пока не нужны.</strong> Не указывайте паспортные данные, пароли, номера карт и другую чувствительную информацию.</span></div>
           <button class="generate-button" type="submit"><span>Собрать обращение</span><span class="button-arrow">↗</span></button>
@@ -138,8 +161,13 @@
               <div class="document-actions">
                 <button class="secondary-button" id="copyButton" type="button"><span>▢</span> Копировать</button>
                 <button class="download-button" id="downloadButton" type="button"><span>↓</span> Скачать .txt</button>
+                <button class="secondary-button print-button" id="printButton" type="button"><span>↗</span> Печать / PDF</button>
               </div>
               <div class="document-notice"><span>i</span><p>Это черновик, а не юридическое заключение. Проверьте данные, адресата и формулировки перед отправкой.</p></div>
+              <div class="review-box" id="reviewBox" hidden>
+                <h4>Что стоит проверить</h4>
+                <ul id="reviewList"></ul>
+              </div>
             </div>
           </div>
 
@@ -173,8 +201,8 @@
 
     <section class="privacy-section" id="privacy">
       <div class="privacy-illustration">⌑</div>
-      <div><div class="section-kicker">ВАШИ ДАННЫЕ — ВАШИ</div><h2>Не отправляем вашу историю на сервер.</h2><p>В этой версии генерация работает прямо в браузере. Текст обращения не сохраняется и никуда не отправляется автоматически. Скачивайте и отправляйте документ только после проверки.</p></div>
-      <span class="privacy-badge"><i></i> ЛОКАЛЬНАЯ ОБРАБОТКА</span>
+      <div><div class="section-kicker">ВАШИ ДАННЫЕ — ВАШИ</div><h2>Вы выбираете, где обработать обращение.</h2><p>Локальный режим не отправляет текст на сервер. ИИ-режим включается отдельно и только после предупреждения о передаче описания внешнему провайдеру. Приложение не сохраняет черновики автоматически.</p></div>
+      <span class="privacy-badge"><i></i> ЛОКАЛЬНО ПО УМОЛЧАНИЮ</span>
     </section>
   </main>
 
@@ -183,6 +211,7 @@
     <p>Понятные слова помогают решать реальные проблемы.</p>
     <span class="footer-note">MVP · 2026</span>
   </footer>
+  <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
