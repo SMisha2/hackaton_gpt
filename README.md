@@ -34,6 +34,8 @@ npm run dev
 1. Откройте [Settings → Pages](https://github.com/SMisha2/hackaton_gpt/settings/pages).
 2. В **Build and deployment → Source** выберите **GitHub Actions**.
 3. Сохраните настройки. Дальнейшие обновления `main` будут публиковаться автоматически.
+
+Если Pages ещё не включены, workflow пропустит деплой и покажет подсказку. Включение требует ручного подтверждения владельца репозитория.
 4. Адрес сайта: `https://smisha2.github.io/hackaton_gpt/`.
 
 На GitHub Pages работает статический интерфейс и локальный генератор. Серверный ИИ-режим там недоступен.

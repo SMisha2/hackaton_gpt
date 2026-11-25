@@ -34,18 +34,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Configure Pages
+        id: pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
+        continue-on-error: true
+      - name: Explain one-time setup if Pages is disabled
+        if: steps.pages.outcome != 'success'
+        run: echo "::notice title=One-time setup::Open repository Settings, then Pages, and select GitHub Actions as the publishing source. Push to main again after saving."
       - name: Prepare static site
+        if: steps.pages.outcome == 'success'
         run: |
           mkdir -p dist
           cp index.html app.js styles.css favicon.svg manifest.webmanifest service-worker.js dist/
           touch dist/.nojekyll
       - name: Upload static artifact
+        if: steps.pages.outcome == 'success'
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
       - name: Publish website
+        if: steps.pages.outcome == 'success'
         id: deployment
         uses: actions/deploy-pages@v4
