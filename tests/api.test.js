@@ -73,6 +73,7 @@ test("rephrases purchase and delivery details with category-specific language", 
   assert.match(shop.document, /после приобретения наушников один из них перестал функционировать/i);
   assert.match(shop.document, /один из наушников перестал функционировать/i);
   assert.match(shop.document, /предлагают обратиться в сервисный центр/i);
+  assert.match(shop.document, /функционировать\\. В магазине/i);
 
   const delivery = buildLocalResult({
     category: "delivery",
